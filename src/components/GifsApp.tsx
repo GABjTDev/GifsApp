@@ -6,15 +6,33 @@ import { CustomHeader } from "../shared/components/CustomHeader"
 import { SearchBar } from "../shared/components/SearchBar"
 
 export const GifsApp = () => {
-  const [previousTerms, setPreviousTerms] = useState(["gatos", "perros", "memes"])
+  const [previousTerms, setPreviousTerms] = useState<string[]>([])
+
   const handleTermsClick = (term: string) => {
     console.log("Term clicked:", term)
+  }
+
+  const handleSearch = (query: string) => {
+
+    console.log("Search query:", query)
+    query = query.trim().toLowerCase()
+    if (query.length === 0) return;
+
+    setPreviousTerms(prev => {
+      if (prev.includes(query)) return prev;
+
+      if (prev.length >= 4) {
+        return [...prev.slice(1), query]
+      }
+
+      return [...prev, query];
+    });
   }
 
   return (
     <>
         <CustomHeader title="Gifs App" description="Busca tus gifs favoritos y compártelos con tus amigos!" />
-        <SearchBar placeholder="Buscar gifs lindos..." />
+        <SearchBar placeholder="Buscar gifs lindos..." onSearch={handleSearch} />
         <PreviousSearches searches={previousTerms} onTermClick={handleTermsClick} />
         <GifList mockGifs={mockGifs} />
     </>
