@@ -4,9 +4,12 @@ import { PreviousSearches } from "../gifs/components/PreviousSearches"
 import { mockGifs } from "../mocks/gifs.mock"
 import { CustomHeader } from "../shared/components/CustomHeader"
 import { SearchBar } from "../shared/components/SearchBar"
+import { getGifsByQueryAction } from "../gifs/actions/get-gifs-by-query.actions"
+import type { Gif } from "../gifs/interfaces/gif.interface"
 
 export const GifsApp = () => {
   const [previousTerms, setPreviousTerms] = useState<string[]>([])
+  const [gifs, setGifs] = useState<Gif[]>([])
 
   const handleTermsClick = (term: string) => {
     console.log("Term clicked:", term)
@@ -27,6 +30,15 @@ export const GifsApp = () => {
 
       return [...prev, query];
     });
+
+    getGifsByQueryAction(query)
+      .then(data => {
+        console.log("Gifs data:", data)
+        setGifs(data);
+      })
+      .catch(error => {
+        console.error("Error fetching gifs:", error)
+      })
   }
 
   return (
@@ -34,7 +46,7 @@ export const GifsApp = () => {
         <CustomHeader title="Gifs App" description="Busca tus gifs favoritos y compártelos con tus amigos!" />
         <SearchBar placeholder="Buscar gifs lindos..." onSearch={handleSearch} />
         <PreviousSearches searches={previousTerms} onTermClick={handleTermsClick} />
-        <GifList mockGifs={mockGifs} />
+        <GifList gifs={gifs} />
     </>
   )
 }
